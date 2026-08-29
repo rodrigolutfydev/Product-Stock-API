@@ -1,6 +1,6 @@
-package api.product_stock.domain.product;
+package br.com.lutfy.product_stock.domain.product;
 
-import api.product_stock.domain.category.Category;
+import br.com.lutfy.product_stock.domain.category.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

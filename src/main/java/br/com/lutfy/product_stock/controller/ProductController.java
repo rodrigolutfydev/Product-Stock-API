@@ -1,7 +1,8 @@
-package api.product_stock.controller;
+package br.com.lutfy.product_stock.controller;
 
-import api.product_stock.domain.category.CategoryRepository;
-import api.product_stock.domain.product.*;
+import br.com.lutfy.product_stock.domain.category.CategoryRepository;
+import br.com.lutfy.product_stock.domain.product.*;
+import br.com.lutfy.product_stock.domain.product.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

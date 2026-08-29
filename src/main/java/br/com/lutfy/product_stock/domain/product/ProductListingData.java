@@ -1,4 +1,4 @@
-package api.product_stock.domain.product;
+package br.com.lutfy.product_stock.domain.product;
 
 import java.math.BigDecimal;
 

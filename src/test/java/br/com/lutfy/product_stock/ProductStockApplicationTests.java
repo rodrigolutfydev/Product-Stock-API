@@ -1,4 +1,4 @@
-package api.product_stock;
+package br.com.lutfy.product_stock;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

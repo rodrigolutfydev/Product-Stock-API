@@ -1,4 +1,4 @@
-package api.product_stock.domain.category;
+package br.com.lutfy.product_stock.domain.category;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;

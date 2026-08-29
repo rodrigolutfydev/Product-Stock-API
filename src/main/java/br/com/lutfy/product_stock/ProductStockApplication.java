@@ -1,4 +1,4 @@
-package api.product_stock;
+package br.com.lutfy.product_stock;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

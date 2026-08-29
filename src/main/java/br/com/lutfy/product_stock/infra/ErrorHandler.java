@@ -1,4 +1,4 @@
-package api.product_stock.infra;
+package br.com.lutfy.product_stock.infra;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package api.product_stock.domain.product;
+package br.com.lutfy.product_stock.domain.product;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

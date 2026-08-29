@@ -1,4 +1,4 @@
-package api.product_stock.domain.product;
+package br.com.lutfy.product_stock.domain.product;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
