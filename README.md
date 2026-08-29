@@ -1,112 +1,195 @@
 # Product Stock API
 
-API REST para controle de estoque, com gestão de categorias e produtos, exclusão lógica e tratamento de erros centralizado. Projeto pessoal.
+REST API for inventory control, with category and product management, logical deletion, and centralized error handling. Personal project.
 
-## Stack
+---
 
-- Java 17
-- Spring Boot 4.1.0
-- Spring Data JPA / Hibernate
-- MySQL 8.4
-- Flyway
-- Bean Validation
+## Tech Stack
 
-## Modelo de dados
+| Technology | Details |
+|---|---|
+| Language | Java 17 |
+| Framework | Spring Boot 4.1.0 |
+| Persistence | Spring Data JPA + Hibernate |
+| Database | MySQL 8.4 |
+| Migrations | Flyway |
+| Validation | Bean Validation |
+| Build Tool | Maven (wrapper `./mvnw` included) |
 
-- **Category**: `id`, `name`, `active`, `productCount`
-- **Product**: `id`, `name`, `price`, `stock`, `active`, `category`
+---
 
-## Como rodar
+## Data Model
 
-### Pré-requisitos
+### Entities
+
+| Entity | Fields |
+|---|---|
+| Category | `id`, `name`, `active`, `productCount` |
+| Product | `id`, `name`, `price`, `stock`, `active`, `category` |
+
+### Relationships
+
+| Relationship | Type |
+|---|---|
+| Category → Product | One-to-Many |
+
+---
+
+## API Endpoints
+
+### Categories — `/categories`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/categories` | Create a category |
+| GET | `/categories` | List active categories (paginated) |
+| GET | `/categories/{id}` | Get a category by ID |
+| PUT | `/categories` | Update a category |
+| DELETE | `/categories/{id}` | Logically delete a category (blocked if linked active products exist) |
+
+### Products — `/products`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/products` | Create a product |
+| GET | `/products` | List active products (paginated) |
+| GET | `/products/{id}` | Get a product by ID |
+| PUT | `/products` | Update a product (including category change) |
+| DELETE | `/products/{id}` | Logically delete a product |
+
+---
+
+## Error Handling
+
+Centralized via `@RestControllerAdvice` (`ErrorHandler`):
+
+| Status | Meaning |
+|---|---|
+| `404` | Resource not found |
+| `400` | Bean Validation failure or malformed request body |
+| `409` | Business rule violation (e.g. deleting a category with linked products) |
+| `500` | Catch-all for unexpected errors |
+
+---
+
+## Design Decisions
+
+- Business rules (logical deletion, state validation) are encapsulated in the entities, not in the controllers.
+- `productCount` is kept as a persisted field on `Category`, updated on every product creation, deletion, or category change — a conscious trade-off instead of computing it via `COUNT` at read time.
+- Logical deletion (`active = false`) is used instead of physical removal.
+
+---
+
+## Getting Started
+
+### Prerequisites
 
 - Java 17+
 - MySQL 8+
-- Maven (ou o wrapper `./mvnw` incluso no projeto)
+- Maven (or the included `./mvnw` wrapper)
 
-### 1. Clonar o repositório
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/rodrigolutfydev/product-stock.git
 cd product-stock
 ```
 
-### 2. Criar o banco de dados
+### 2. Create the database
 
-Conecte no MySQL e crie o banco vazio:
+Connect to MySQL and create an empty database:
 
 ```sql
 CREATE DATABASE product_stock;
 ```
 
-### 3. Configurar as variáveis de ambiente
+### 3. Configure environment variables
 
-A aplicação lê usuário e senha do banco via variáveis de ambiente — nenhuma credencial fica no código.
+The application reads database credentials from environment variables — no credentials are hardcoded.
 
-| Variável | Descrição |
+| Variable | Description |
 |---|---|
-| `DB_USERNAME` | Usuário do MySQL |
-| `DB_PASSWORD` | Senha do MySQL |
+| `DB_USERNAME` | MySQL username |
+| `DB_PASSWORD` | MySQL password |
 
 **Via terminal:**
 ```bash
-export DB_USERNAME=seu_usuario
-export DB_PASSWORD=sua_senha
+export DB_USERNAME=your_username
+export DB_PASSWORD=your_password
 ```
 
-**Via IntelliJ:** Run > Edit Configurations > Environment Variables, e adicione as duas variáveis lá.
+**Via IntelliJ:** Run > Edit Configurations > Environment Variables, and add both variables there.
 
-### 4. Rodar a aplicação
+### 4. Run the application
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Na primeira execução, o Flyway aplica as migrations automaticamente, criando as tabelas `categories` e `products` já com a estrutura completa — não é necessário nenhum script manual.
+On the first run, Flyway automatically applies the migrations, creating the `categories` and `products` tables with the full structure already in place — no manual script needed.
 
-### 5. Testar
+### 5. Test it out
 
-A API sobe em `http://localhost:8080`. Use qualquer cliente HTTP (Insomnia, Postman, curl) para testar os endpoints listados abaixo. Exemplo rápido com curl:
+The API starts on `http://localhost:8080`. Use any HTTP client (Insomnia, Postman, curl) to test the endpoints listed above. Quick example with curl:
 
 ```bash
 curl -X POST http://localhost:8080/categories \
   -H "Content-Type: application/json" \
-  -d '{"name": "Eletrônicos"}'
+  -d '{"name": "Electronics"}'
 ```
 
-## Endpoints
+---
 
-### Categories
+## Example Requests
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/categories` | Cadastra categoria |
-| `GET` | `/categories` | Lista categorias ativas (paginado) |
-| `GET` | `/categories/{id}` | Detalha categoria |
-| `PUT` | `/categories` | Atualiza categoria |
-| `DELETE` | `/categories/{id}` | Exclui logicamente (bloqueado se houver produtos ativos vinculados) |
+**Create a category:**
+```json
+POST /categories
 
-### Products
+{
+  "name": "Electronics"
+}
+```
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/products` | Cadastra produto |
-| `GET` | `/products` | Lista produtos ativos (paginado) |
-| `GET` | `/products/{id}` | Detalha produto |
-| `PUT` | `/products` | Atualiza produto (incluindo troca de categoria) |
-| `DELETE` | `/products/{id}` | Exclui logicamente |
+**Create a product:**
+```json
+POST /products
 
-## Tratamento de erros
+{
+  "name": "Wireless Mouse",
+  "price": 79.90,
+  "stock": 50,
+  "category": {
+    "id": 1
+  }
+}
+```
 
-`@RestControllerAdvice` centralizado (`ErrorHandler`):
+**Update a product:**
+```json
+PUT /products
 
-- `404` — recurso inexistente
-- `400` — falha de Bean Validation ou corpo malformado
-- `409` — violação de regra de negócio (ex: excluir categoria com produtos vinculados)
-- `500` — catch-all
+{
+  "id": 1,
+  "name": "Wireless Mouse",
+  "price": 89.90,
+  "stock": 45,
+  "category": {
+    "id": 1
+  }
+}
+```
 
-## Decisões de design
+---
 
-- Regras de negócio (exclusão lógica, validação de estado) encapsuladas nas entities, não nos controllers.
-- `productCount` mantido como campo persistido em `Category`, atualizado a cada cadastro/exclusão/troca de categoria de produto — trade-off consciente frente a calcular via `COUNT` em tempo de leitura.
-- Exclusão lógica (`active = false`) em vez de remoção física.
+## Roadmap
+
+- [x] Full CRUD for Category and Product
+- [x] Logical deletion with business-rule protection
+- [x] Centralized exception handling
+- [x] Flyway migrations
+- [x] Pagination on list endpoints
+- [ ] Spring Security + JWT authentication
+- [ ] Docker + Docker Compose setup
+- [ ] Integration tests
+- [ ] Filter endpoints (e.g. `GET /products?category=`)
