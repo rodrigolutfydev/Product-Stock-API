@@ -1,9 +1,8 @@
 package br.com.lutfy.product_stock.controller;
 
 import br.com.lutfy.product_stock.domain.category.*;
-import br.com.lutfy.product_stock.domain.category.*;
 import br.com.lutfy.product_stock.domain.product.ProductRepository;
-import br.com.lutfy.product_stock.infra.ErrorHandler;
+import br.com.lutfy.product_stock.infra.exception.ErrorHandler;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 
 @RestController
-@RequestMapping("categorias")
+@RequestMapping("categories")
 public class CategoryController {
 
     @Autowired
