@@ -3,6 +3,7 @@ package br.com.lutfy.product_stock.controller;
 
 import br.com.lutfy.product_stock.domain.user.AuthenticationData;
 import br.com.lutfy.product_stock.domain.user.User;
+import br.com.lutfy.product_stock.infra.security.JwtTokenData;
 import br.com.lutfy.product_stock.infra.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,9 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity login(@RequestBody @Valid AuthenticationData data) {
-        var token = new UsernamePasswordAuthenticationToken(data.login(), data.password());
-        var authentication = manager.authenticate(token);
-        return ResponseEntity.ok(
-                tokenService.tokenGenerate((User)authentication.getPrincipal())
-        );
+        var authenticationToken = new UsernamePasswordAuthenticationToken(data.login(), data.password());
+        var authentication = manager.authenticate(authenticationToken);
+        var tokenJWT = tokenService.tokenGenerate((User)authentication.getPrincipal());
+        return ResponseEntity.ok(new JwtTokenData(tokenJWT));
     }
 }
