@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Table(name = "Users")
+@Table(name = "users")
 @Entity(name = "User")
 @Getter
 @NoArgsConstructor
@@ -23,7 +23,6 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String login;
     private String password;
 
