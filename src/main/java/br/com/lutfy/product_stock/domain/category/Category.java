@@ -28,7 +28,7 @@ public class Category {
         this.productCount = 0;
     }
 
-    public void updateInformation(@Valid CategoryUpdateData date) {
+    public void updateInformation(@Valid CategoryUpdateData date  ) {
         if (date.name() != null && !date.name().isBlank()) {
             this.name = date.name();
         }
